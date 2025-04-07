@@ -1,41 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- Vincula o manifesto -->
-<link rel="manifest" href="manifest.json">
-
-<!-- Registra o service worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js')
-      .then(function() {
-        console.log('Service Worker registrado com sucesso.');
-      })
-      .catch(function(error) {
-        console.log('Falha ao registrar o Service Worker:', error);
-      });
-  }
-</script>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contador pra te ver 💖</title>
   <style>
-    
-  body {
+    body {
       margin: 0;
-      overflow-x: hidden;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #cf49b2, #aa0b7a);
       color: #fff0f5;
       display: flex;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
       text-align: center;
       position: relative;
       flex-direction: column;
-      padding: 40px 20px;
+      overflow: hidden;
     }
-
 
     .container {
       background: rgba(255, 192, 203, 0.05);
@@ -61,7 +44,7 @@
     }
 
     .countdown div {
-      background: #bb3284;
+      background: #a83279;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 0 15px #a83279;
@@ -81,7 +64,17 @@
       color: #ffe4ef;
     }
 
-    /* Corações animados */
+    /* Container fixo para corações */
+    #heart-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
     .heart {
       position: absolute;
       top: -50px;
@@ -89,9 +82,8 @@
       height: 20px;
       background: pink;
       transform: rotate(45deg);
-      animation: fall linear infinite;
       opacity: 0.8;
-      z-index: 1;
+      will-change: transform, opacity;
     }
 
     .heart::before,
@@ -114,14 +106,6 @@
       top: 0;
     }
 
-    @keyframes fall {
-      to {
-        transform: translateY(110vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    /* Mensagem de amor */
     .love-message {
       margin-top: 30px;
       font-size: 1.8rem;
@@ -160,6 +144,8 @@
     </div>
   </div>
 
+  <div id="heart-container"></div>
+
   <script>
     const countdown = () => {
       const endDate = new Date("2025-07-19T04:00:00-03:00").getTime();
@@ -182,20 +168,43 @@
     countdown();
     setInterval(countdown, 1000);
 
-    // Corações caindo
-    const createHeart = () => {
+    // Corações otimizados
+    const heartContainer = document.getElementById("heart-container");
+    const hearts = [];
+
+    function createHeart() {
       const heart = document.createElement("div");
-      heart.classList.add("heart");
+      heart.className = "heart";
       heart.style.left = Math.random() * 100 + "vw";
       heart.style.animationDuration = (Math.random() * 2 + 3) + "s";
-      document.body.appendChild(heart);
 
-      setTimeout(() => {
-        heart.remove();
-      }, 5000);
-    };
+      heart.x = Math.random() * window.innerWidth;
+      heart.y = -50;
+      heart.speed = 1 + Math.random() * 2;
+      heart.rotation = Math.random() * 360;
+
+      heart.style.transform = `translate3d(${heart.x}px, ${heart.y}px, 0) rotate(${heart.rotation}deg)`;
+      heartContainer.appendChild(heart);
+      hearts.push(heart);
+    }
+
+    function animateHearts() {
+      for (let i = hearts.length - 1; i >= 0; i--) {
+        const heart = hearts[i];
+        heart.y += heart.speed;
+        heart.style.transform = `translate3d(${heart.x}px, ${heart.y}px, 0) rotate(${heart.rotation}deg)`;
+
+        if (heart.y > window.innerHeight + 50) {
+          heart.remove();
+          hearts.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animateHearts);
+    }
 
     setInterval(createHeart, 200);
+    animateHearts();
   </script>
 </body>
 </html>
