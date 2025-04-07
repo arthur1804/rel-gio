@@ -1,0 +1,21 @@
+{
+    "name": "Contador do Amor ❤️",
+    "short_name": "Contador Amor",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#4b064c",
+    "theme_color": "#ffb6c1",
+    "icons": [
+      {
+        "src": "IMG-20250308-WA0187.jpg",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  
